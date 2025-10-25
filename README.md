@@ -1,54 +1,73 @@
-# Welcome to your Lovable project
+# 🧘‍♀️ CalmQuest
 
-## Project info
+**Gamified stress-management and mindfulness app — turn daily self-care into an engaging, personalized quest.**
 
-**URL**: https://lovable.dev/projects/408a6410-fe3a-441f-b91c-930a335948f1
+CalmQuest helps users build consistent mindfulness habits by combining mood-based daily quests, short guided exercises, and light RPG-style progression (XP, levels, badges). The app makes emotional growth feel rewarding and fun while encouraging sustainable self-care.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🧩 About
 
-**Use Lovable**
+**CalmQuest** is a mindfulness and mental wellness app that transforms stress management into an interactive adventure. Users receive mood-aware quests tailored to their current mood, energy, and available time.  
+The goal is to make mindfulness **approachable, personalized, and consistent.**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/408a6410-fe3a-441f-b91c-930a335948f1) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🎯 Problem
 
-**Use your preferred IDE**
+Modern life brings constant stress — academic pressure, workplace burnout, and digital fatigue.  
+Most wellness apps feel repetitive, impersonal, or hard to stick with. As a result, users often lose motivation and stop maintaining healthy mindfulness habits.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 💡 Solution
 
-Follow these steps:
+CalmQuest introduces **gamification** and **personalized recommendations** to make stress management engaging and sustainable.  
+By rewarding consistency and visualizing emotional growth through XP, badges, and achievements, CalmQuest helps users form and maintain healthy self-care routines.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## ✨ Key Features
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Mood-Based Quests:** Daily activities adapted to a user’s mood, time availability, and energy.  
+- **Guided Breathing & Meditation:** Short, accessible exercises for quick stress relief and focus.  
+- **Progress Tracking:** Visual dashboards that show XP, levels, and milestone achievements.  
+- **Personalized Recommendations:** Adaptive suggestions based on mood logs and past engagement.  
+- **Notifications & Streaks:** Gentle reminders and streak tracking to encourage consistency.  
+- **Achievements & Rewards:** Badges and level-ups to make progress visible and motivating.  
+- **Privacy-First Approach:** Clear controls for data export/delete and minimal required data collection.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## ⚙️ How It Works (Conceptual)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. User records mood and available time.  
+2. The quest engine proposes one or more short activities tailored to that combination.  
+3. Completing activities grants XP and contributes to streaks and achievements.  
+4. Recommendation logic adapts over time to prioritize activities that improve engagement and well-being.
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🕹️ Gamification Model (Example)
+
+- **XP** for completed quests (scaled by duration/difficulty)  
+- **Level Progress** based on cumulative XP  
+- **Streak Multipliers** for consecutive days of completion  
+- **Badges** for milestones (e.g., 7-day streak, consistent mood improvement)  
+- **Personalized Evolution**: Quest suggestions evolve with user behavior
+
+---
+
+## 🧭 User Flow
+
+1. **Sign Up / Log In**  
+2. **Set Preferences** (daily notification window, typical session length)  
+3. **Log Mood** (quick selection)  
+4. **Receive a Tailored Quest**  
+5. **Complete the Quest** (breathing, meditation, micro-tasks)  
+6. **Earn XP / Badges** and track progress in the dashboard
+
+---
 
 ## What technologies are used for this project?
 
@@ -60,14 +79,16 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/408a6410-fe3a-441f-b91c-930a335948f1) and click on Share -> Publish.
+## 👥 Teammates
 
-## Can I connect a custom domain to my Lovable project?
+- **Rahat** — Frontend  
+- **Rhyan** — Backend  
+- **Mohamed** — Hybrid (Frontend & Backend)
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🚀 Vision
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+To make emotional well-being feel as rewarding as leveling up in a game — helping users turn stress relief into a daily, enjoyable habit.
