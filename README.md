@@ -92,5 +92,3 @@ This project is built with:
 ## 🚀 Vision
 
 To make emotional well-being feel as rewarding as leveling up in a game — helping users turn stress relief into a daily, enjoyable habit.
-
-To make emotional well-being feel as rewarding as leveling up in a game — helping users turn stress relief into a daily, enjoyable habit.
