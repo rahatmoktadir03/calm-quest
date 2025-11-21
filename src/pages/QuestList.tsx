@@ -52,8 +52,19 @@ const QuestList = () => {
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-2xl font-bold">{quest.title}</h3>
-                    <Badge className={getDifficultyColor(quest.difficulty)}>
-                      {quest.difficulty}
+                    <Badge
+                      variant="outline"
+                      className={`${
+                        quest.difficulty === "easy"
+                          ? "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/50"
+                          : quest.difficulty === "medium"
+                          ? "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/50"
+                          : "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/50"
+                      }`}
+                    >
+                      {quest.difficulty === "easy" && "🟢 Easy"}
+                      {quest.difficulty === "medium" && "🟡 Medium"}
+                      {quest.difficulty === "hard" && "🔴 Hard"}
                     </Badge>
                   </div>
                   <p className="text-muted-foreground mb-4">

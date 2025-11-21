@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useUser, xpForNextLevel } from "@/contexts/UserContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { initializeAchievements } from "@/lib/achievements";
 import { QuestCard } from "@/components/QuestCard";
+import { OnboardingFlow } from "@/components/OnboardingFlow";
+import { DailyChallengeB } from "@/components/DailyChallengeBanner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +13,7 @@ import { Target, Trophy, Flame, Star, Heart, Zap, User } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
   const { stats, checkStreak } = useUser();
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
   useEffect(() => {
     // Initialize achievements if not already done
@@ -69,6 +72,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
+      )}
+
       <div className="max-w-7xl mx-auto">
         {/* Header with Profile Button */}
         <div className="flex justify-end mb-4">
@@ -91,6 +99,15 @@ const Index = () => {
             Transform meditation into an adventure. Level up your mindfulness,
             unlock achievements, and conquer stress with gamified wellness.
           </p>
+
+          {/* Daily Challenge Banner */}
+          {stats.totalQuestsCompleted > 0 && (
+            <div className="max-w-3xl mx-auto mb-8">
+              <DailyChallengeB
+                onStartChallenge={() => navigate("/select-mood")}
+              />
+            </div>
+          )}
 
           {/* User Stats Card */}
           {stats.totalQuestsCompleted > 0 ? (

@@ -1,15 +1,23 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Quest } from "@/lib/questGenerator";
+import { Quest, getAllQuests } from "@/lib/questGenerator";
 import { useUser } from "@/contexts/UserContext";
 import { MeditationTimer } from "@/components/MeditationTimer";
+import { BreathingVisualizer } from "@/components/BreathingVisualizer";
 import { AchievementUnlock } from "@/components/AchievementUnlock";
+import { ShareAchievement } from "@/components/ShareAchievement";
+import { QuestRecommendations } from "@/components/QuestRecommendations";
+import {
+  MilestoneCelebration,
+  checkMilestones,
+} from "@/components/MilestoneCelebration";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, Trophy, Sparkles } from "lucide-react";
 import { checkAchievements } from "@/lib/achievements";
+import { soundEffects } from "@/lib/soundEffects";
 import confetti from "canvas-confetti";
 
 const QuestDetail = () => {
@@ -22,8 +30,11 @@ const QuestDetail = () => {
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [showAchievementToast, setShowAchievementToast] = useState(false);
   const [currentAchievementIndex, setCurrentAchievementIndex] = useState(0);
+  const [milestone, setMilestone] = useState<any>(null);
+  const [showBreathingViz, setShowBreathingViz] = useState(false);
 
   const quest = location.state?.quest as Quest;
+  const allQuests = getAllQuests();
 
   // All hooks must be at the top level
   useEffect(() => {
@@ -55,14 +66,36 @@ const QuestDetail = () => {
   const handleComplete = () => {
     const xpEarned = Math.floor(quest.duration * 2 + 50);
     setEarnedXP(xpEarned);
+
+    // Play sounds
+    soundEffects.questComplete();
+    soundEffects.xpGain();
+
+    const oldLevel = stats.level;
     completeQuest(quest.id, quest.duration);
+
+    // Check if leveled up
+    const newLevel = Math.floor(Math.sqrt((stats.xp + xpEarned) / 100)) + 1;
+    if (newLevel > oldLevel) {
+      setTimeout(() => soundEffects.levelUp(), 300);
+    }
 
     // Check for new achievements
     const newlyUnlocked = checkAchievements(stats);
     setNewAchievements(newlyUnlocked);
     newlyUnlocked.forEach((achievementId) => {
       unlockAchievement(achievementId);
+      soundEffects.achievement();
     });
+
+    // Check for milestones
+    const detectedMilestone = checkMilestones({
+      ...stats,
+      totalQuestsCompleted: stats.totalQuestsCompleted + 1,
+    });
+    if (detectedMilestone) {
+      setMilestone(detectedMilestone);
+    }
 
     // Trigger confetti
     confetti({
@@ -96,99 +129,134 @@ const QuestDetail = () => {
 
     return (
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        {/* Milestone celebration */}
+        {milestone && (
+          <MilestoneCelebration
+            milestone={milestone}
+            onClose={() => setMilestone(null)}
+          />
+        )}
+
         {showAchievementToast && currentAchievement && (
           <AchievementUnlock
             achievement={currentAchievement}
             onClose={() => setShowAchievementToast(false)}
           />
         )}
-        <Card className="p-8 max-w-lg w-full text-center space-y-6">
-          <div className="space-y-4">
-            <div className="text-6xl">🎉</div>
-            <h1 className="text-4xl font-bold">Quest Complete!</h1>
-            <p className="text-xl text-muted-foreground">
-              Amazing work on completing this quest
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="bg-primary/10 rounded-lg p-6">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Trophy className="h-6 w-6 text-primary" />
-                <span className="text-2xl font-bold">+{earnedXP} XP</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Level {stats.level} • {Math.floor(xpInCurrentLevel)}/
-                {xpNeededForLevel} XP
+        <div className="max-w-2xl w-full space-y-6">
+          <Card className="p-8 text-center space-y-6">
+            <div className="space-y-4">
+              <div className="text-6xl">🎉</div>
+              <h1 className="text-4xl font-bold">Quest Complete!</h1>
+              <p className="text-xl text-muted-foreground">
+                Amazing work on completing this quest
               </p>
-              <Progress value={levelProgress} className="mt-3 h-2" />
             </div>
 
-            {newAchievements.length > 0 && (
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <Sparkles className="h-5 w-5 text-yellow-500" />
-                  <span className="font-semibold text-yellow-600 dark:text-yellow-400">
-                    New Achievement{newAchievements.length > 1 ? "s" : ""}{" "}
-                    Unlocked!
-                  </span>
+            <div className="space-y-4">
+              <div className="bg-primary/10 rounded-lg p-6">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Trophy className="h-6 w-6 text-primary" />
+                  <span className="text-2xl font-bold">+{earnedXP} XP</span>
                 </div>
-                <div className="space-y-2">
-                  {newAchievements.map((achievementId) => {
-                    const achievement = stats.achievements.find(
-                      (a) => a.id === achievementId
-                    );
-                    return achievement ? (
-                      <Badge
-                        key={achievementId}
-                        variant="outline"
-                        className="text-sm"
-                      >
-                        {achievement.icon} {achievement.name}
-                      </Badge>
-                    ) : null;
-                  })}
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  Level {stats.level} • {Math.floor(xpInCurrentLevel)}/
+                  {xpNeededForLevel} XP
+                </p>
+                <Progress value={levelProgress} className="mt-3 h-2" />
               </div>
-            )}
 
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold">
-                  {stats.totalQuestsCompleted}
+              {newAchievements.length > 0 && (
+                <>
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <Sparkles className="h-5 w-5 text-yellow-500" />
+                      <span className="font-semibold text-yellow-600 dark:text-yellow-400">
+                        New Achievement{newAchievements.length > 1 ? "s" : ""}{" "}
+                        Unlocked!
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {newAchievements.map((achievementId) => {
+                        const achievement = stats.achievements.find(
+                          (a) => a.id === achievementId
+                        );
+                        return achievement ? (
+                          <Badge
+                            key={achievementId}
+                            variant="outline"
+                            className="text-sm"
+                          >
+                            {achievement.icon} {achievement.name}
+                          </Badge>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Share Achievement */}
+                  {newAchievements.length > 0 && (
+                    <ShareAchievement
+                      achievement={
+                        stats.achievements.find(
+                          (a) => a.id === newAchievements[0]
+                        )!
+                      }
+                    />
+                  )}
+                </>
+              )}
+
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold">
+                    {stats.totalQuestsCompleted}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Quests</div>
                 </div>
-                <div className="text-xs text-muted-foreground">Quests</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold">{stats.currentStreak}</div>
-                <div className="text-xs text-muted-foreground">Day Streak</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold">
-                  {stats.totalMeditationMinutes}
+                <div>
+                  <div className="text-2xl font-bold">
+                    {stats.currentStreak}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Day Streak
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">Minutes</div>
+                <div>
+                  <div className="text-2xl font-bold">
+                    {stats.totalMeditationMinutes}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Minutes</div>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="space-y-3">
-            <Button
-              onClick={() => navigate("/quests")}
-              className="w-full"
-              size="lg"
-            >
+          {/* Quest Recommendations */}
+          <QuestRecommendations
+            currentQuest={quest}
+            allQuests={allQuests}
+            onQuestSelect={(selectedQuest) => {
+              navigate(`/quest/${selectedQuest.id}`, {
+                state: { quest: selectedQuest },
+              });
+              window.location.reload(); // Refresh to reset state
+            }}
+          />
+
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => navigate("/quests")} size="lg">
               Continue Questing
             </Button>
             <Button
               onClick={() => navigate("/profile")}
               variant="outline"
-              className="w-full"
+              size="lg"
             >
               View Profile
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -239,6 +307,30 @@ const QuestDetail = () => {
               </ul>
             </div>
           </Card>
+
+          {/* Breathing Visualizer for breathing quests */}
+          {quest.type === "breathing" && (
+            <Card className="p-8">
+              <h3 className="text-xl font-semibold mb-4 text-center">
+                Follow the Breathing Guide
+              </h3>
+              <BreathingVisualizer
+                isActive={showBreathingViz}
+                onCycleComplete={() => {}}
+              />
+              <div className="flex justify-center mt-6">
+                <Button
+                  onClick={() => setShowBreathingViz(!showBreathingViz)}
+                  variant={showBreathingViz ? "outline" : "default"}
+                  size="lg"
+                >
+                  {showBreathingViz
+                    ? "Stop Breathing Guide"
+                    : "Start Breathing Guide"}
+                </Button>
+              </div>
+            </Card>
+          )}
 
           {/* Timer */}
           <MeditationTimer
