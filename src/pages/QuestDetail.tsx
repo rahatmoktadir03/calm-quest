@@ -4,6 +4,7 @@ import { Quest, getAllQuests } from "@/lib/questGenerator";
 import { useUser } from "@/contexts/UserContext";
 import { MeditationTimer } from "@/components/MeditationTimer";
 import { BreathingVisualizer } from "@/components/BreathingVisualizer";
+import { MeditationScriptGenerator } from "@/components/MeditationScriptGenerator";
 import { AchievementUnlock } from "@/components/AchievementUnlock";
 import { ShareAchievement } from "@/components/ShareAchievement";
 import { QuestRecommendations } from "@/components/QuestRecommendations";
@@ -34,6 +35,7 @@ const QuestDetail = () => {
   const [showBreathingViz, setShowBreathingViz] = useState(false);
 
   const quest = location.state?.quest as Quest;
+  const character = location.state?.character;
   const allQuests = getAllQuests();
 
   // All hooks must be at the top level
@@ -72,7 +74,7 @@ const QuestDetail = () => {
     soundEffects.xpGain();
 
     const oldLevel = stats.level;
-    completeQuest(quest.id, quest.duration);
+    completeQuest(quest.id, quest.title, quest.duration);
 
     // Check if leveled up
     const newLevel = Math.floor(Math.sqrt((stats.xp + xpEarned) / 100)) + 1;
@@ -119,6 +121,11 @@ const QuestDetail = () => {
   const xpInCurrentLevel = stats.xp - currentLevelXP;
   const xpNeededForLevel = nextLevelXP - currentLevelXP;
   const levelProgress = (xpInCurrentLevel / xpNeededForLevel) * 100;
+
+  // If quest is not found, redirect (handled by useEffect)
+  if (!quest) {
+    return null;
+  }
 
   if (showCompletion) {
     const currentAchievement = newAchievements[currentAchievementIndex]
@@ -330,6 +337,15 @@ const QuestDetail = () => {
                 </Button>
               </div>
             </Card>
+          )}
+
+          {/* AI Meditation Script Generator */}
+          {stats.currentMood && (
+            <MeditationScriptGenerator
+              mood={stats.currentMood}
+              duration={quest.duration}
+              character={character}
+            />
           )}
 
           {/* Timer */}

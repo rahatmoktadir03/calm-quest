@@ -1,14 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import { useUser, xpForNextLevel } from "@/contexts/UserContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Trophy, Flame, Clock, Target, Award } from "lucide-react";
+import {
+  ArrowLeft,
+  Trophy,
+  Flame,
+  Clock,
+  Target,
+  Award,
+  LogOut,
+} from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { stats, resetProgress } = useUser();
+  const { signOut, user } = useAuth();
 
   const currentLevelXP = Math.pow(stats.level - 1, 2) * 100;
   const nextLevelXP = xpForNextLevel(stats.level);
@@ -30,13 +40,26 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        <Button variant="ghost" onClick={() => navigate("/")} className="mb-8">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
-        </Button>
+        <div className="flex justify-between items-center mb-8">
+          <Button variant="ghost" onClick={() => navigate("/")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Home
+          </Button>
+          {user && (
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          )}
+        </div>
 
         <div className="space-y-6">
           {/* Header Card */}
